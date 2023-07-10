@@ -2,7 +2,9 @@
 
 Public Class InstructionForm
     'Configuration Path
+    Private ReadOnly checkerName As String = GetIniValue("SETUP", "checkerName", $"{currentDirectory}/ConfigFiles/comConfig.ini")
     Private ReadOnly ictLogPath As String = GetIniValue("SETUP", "ictLog", $"{currentDirectory}/ConfigFiles/comConfig.ini")
+    Private ReadOnly testDataPath As String = GetIniValue("SETUP", "testDataPath", $"{currentDirectory}/ConfigFiles/comConfig.ini")
     Private ReadOnly output1Path As String = GetIniValue("SETUP", "output1", $"{currentDirectory}/ConfigFiles/comConfig.ini")
     Private ReadOnly output2Path As String = GetIniValue("SETUP", "output2", $"{currentDirectory}/ConfigFiles/comConfig.ini")
     Private ReadOnly plasmaFilePath As String = GetIniValue("SETUP", "plasmaFile", $"{currentDirectory}/ConfigFiles/comConfig.ini")
@@ -26,6 +28,7 @@ Public Class InstructionForm
         StartPosition = FormStartPosition.Manual
         Location = New Point(Screen.PrimaryScreen.WorkingArea.Left, Screen.PrimaryScreen.WorkingArea.Bottom - Height)
         InitializeForm()
+        LoadInspector()
     End Sub
 
     Private Sub CanisSerialNumberTxt_KeyDown(sender As Object, e As KeyEventArgs) Handles canisSerialNumberTxt.KeyDown
@@ -74,6 +77,10 @@ Public Class InstructionForm
 
     Private Sub EndBtn_Click(sender As Object, e As EventArgs) Handles EndBtn.Click
         If sequenceNumberCurrent = sequenceController.sequenceList.ToArray.Length - 1 Then
+            If inspectorCmb.Text = "" Then
+                ErrorAlert("Please select inspector!")
+                Exit Sub
+            End If
             WriteLog()
             InitializeForm()
         Else
@@ -105,6 +112,12 @@ Public Class InstructionForm
         If File.Exists(ictLogPath) Then
             File.Delete(ictLogPath)
         End If
+    End Sub
+    Private Sub LoadInspector()
+        Dim inspectors As String() = File.ReadAllLines($"{currentDirectory}/ConfigFiles/inspector.txt")
+        For Each inspector As String In inspectors
+            inspectorCmb.Items.Add(inspector.Trim())
+        Next
     End Sub
 
     Private Sub GetInstructions()
@@ -146,7 +159,7 @@ Public Class InstructionForm
             EndBtn.Visible = True
             BackBtn.Visible = False
             EndBtn.Text = "END"
-        ElseIf sequenceNumber = sequenceController.sequenceList.ToArray.Length - 1 Then
+        ElseIf sequenceNumber = sequenceController.sequenceList.ToArray().Length - 1 Then
             BackBtn.Visible = True
             NextBtn.Visible = False
             EndBtn.Visible = True
@@ -209,7 +222,7 @@ Public Class InstructionForm
 
             newLogRows.Add(newLogLine)
 
-            If logArr.Length = 1 Then
+            If logArr.Length = 1 And logArr(0).Replace("""", "") = "EOF" Then
                 newLogFiles.Add(newLogRows.ToArray())
                 newLogRows.Clear()
             End If
@@ -244,6 +257,10 @@ Public Class InstructionForm
             For Each newLogFile In newLogFiles(newLogFiles.ToArray.Length - 1)
                 Writer.WriteLine(newLogFile)
             Next
+        End Using
+
+        Using Writer As New StreamWriter(Path.Combine(testDataPath, $"{orderController.canisSerialNumber.SerialNumber}.txt"), False)
+            Writer.WriteLine($"{orderController.canisSerialNumber.SerialNumber},{orderController.canisSerialNumber.Model},,,,,,{currentDateTime:d/M/yyyy hh:mm:ss tt},,,,,{inspectorCmb.Text},YMB,{checkerName},{status},")
         End Using
 
         InformationAlert("Log Transfered")

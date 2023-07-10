@@ -31,6 +31,8 @@ Partial Class InstructionForm
         Me.NextBtn = New System.Windows.Forms.Button()
         Me.EndBtn = New System.Windows.Forms.Button()
         Me.Label2 = New System.Windows.Forms.Label()
+        Me.inspectorCmb = New System.Windows.Forms.ComboBox()
+        Me.Label3 = New System.Windows.Forms.Label()
         CType(Me.instructionPic, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -112,12 +114,34 @@ Partial Class InstructionForm
         Me.Label2.TabIndex = 7
         Me.Label2.Text = "INSTRUCTION"
         '
+        'inspectorCmb
+        '
+        Me.inspectorCmb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.inspectorCmb.Font = New System.Drawing.Font("Source Sans Pro", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.inspectorCmb.FormattingEnabled = True
+        Me.inspectorCmb.Location = New System.Drawing.Point(457, 27)
+        Me.inspectorCmb.Name = "inspectorCmb"
+        Me.inspectorCmb.Size = New System.Drawing.Size(238, 30)
+        Me.inspectorCmb.TabIndex = 8
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Font = New System.Drawing.Font("Source Sans Pro", 11.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label3.Location = New System.Drawing.Point(379, 31)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(76, 19)
+        Me.Label3.TabIndex = 9
+        Me.Label3.Text = "Inspector"
+        '
         'InstructionForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 14.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1047, 240)
         Me.ControlBox = False
+        Me.Controls.Add(Me.Label3)
+        Me.Controls.Add(Me.inspectorCmb)
         Me.Controls.Add(Me.Label2)
         Me.Controls.Add(Me.EndBtn)
         Me.Controls.Add(Me.NextBtn)
@@ -145,4 +169,6 @@ Partial Class InstructionForm
     Friend WithEvents NextBtn As Button
     Friend WithEvents EndBtn As Button
     Friend WithEvents Label2 As Label
+    Friend WithEvents inspectorCmb As ComboBox
+    Friend WithEvents Label3 As Label
 End Class
