@@ -34,6 +34,7 @@ Public Class InstructionForm
     Private Sub CanisSerialNumberTxt_KeyDown(sender As Object, e As KeyEventArgs) Handles canisSerialNumberTxt.KeyDown
         If e.KeyCode = Keys.Enter Then
 
+            'Delete the ICT log to ensure the log output is not duplicated and is good.
             If File.Exists(ictLogPath) Then
                 File.Delete(ictLogPath)
             End If
@@ -127,14 +128,17 @@ Public Class InstructionForm
         Dim prefixSequenceFileName As String = "comTS"
         Dim extensionSequenceFileName As String = ".csv"
 
+        'The third-party program cannot write "*" and /," so we must convert it.
         model = orderController.canisSerialNumber.Model.Replace("*A", "").Replace("/", "-")
         partOrder = model
 
+        'Check if the model functions as a PBA or not.
         pbaModel = GetIniValue("MODEL", partOrder, $"{currentDirectory}/ConfigFiles/modelPbaList.ini").Trim()
         If String.IsNullOrEmpty(pbaModel) Then
             pbaModel = model
         End If
 
+        'Sequences define only models, so we remove the suffix code.
         model = model.Split("-")(0)
 
         sequenceFilePath = $"{sequencePath}/{prefixSequenceFileName}{model}{extensionSequenceFileName}"
@@ -195,7 +199,11 @@ Public Class InstructionForm
         Dim newLogFiles As New List(Of String())
         Dim newLogRows As New List(Of String)
 
+        'In the log file, the second line shows the model and test results.
+        ' "GO" is describe test PASS
+        ' "NG" is describe test FAIL
         For Each logRow As String In logRows
+
             Dim logArr As String() = logRow.Split(",")
             Dim newLogLine As String = logRow
 
@@ -203,12 +211,14 @@ Public Class InstructionForm
                 Dim dataModel As String() = logArr(0).Replace("""", "").Split(" ").Where(Function(str) Not String.IsNullOrEmpty(str)).ToArray()
                 modelFunction = dataModel(dataModel.Length - 1).Trim()
 
+                'Check the result of test
                 If logArr(1).Replace("""", "") = "GO" Then
                     status = "PASS"
                 Else
                     status = "FAIL"
                 End If
 
+                'Compare the tested third-party model and scanned models.
                 If modelFunction = pbaModel Then
                     newLogLine = newLogLine.Replace(modelFunction, orderController.canisSerialNumber.Model)
                 Else
@@ -231,26 +241,20 @@ Public Class InstructionForm
         Dim currentDateTime = Date.Now()
 
         Dim currentYear As String = currentDateTime.Year
-        Dim currentMonth As String = currentDateTime.Month
-        Dim currentDay As String = currentDateTime.Day
-        Dim currentHour As String = currentDateTime.Hour
-        Dim currentMinute As String = currentDateTime.Minute
-        Dim currentSecond As String = currentDateTime.Second
+        Dim currentMonth As String = currentDateTime.Month.ToString("00")
+        Dim currentDay As String = currentDateTime.Day.ToString("00")
+        Dim currentHour As String = currentDateTime.Hour.ToString("00")
+        Dim currentMinute As String = currentDateTime.Minute.ToString("00")
+        Dim currentSecond As String = currentDateTime.Second.ToString("00")
 
+        'ENC-ZCT_C3ZG07243S_20230710101355_PASS.LOG
         Dim newFileNames As String = $"{partOrder}_{orderController.canisSerialNumber.SerialNumber}_{currentYear}{currentMonth}{currentDay}{currentHour}{currentMinute}{currentSecond}_{status}.LOG"
 
-        Using Writer As New StreamWriter(Path.Combine(output1Path, newFileNames), False)
-            For Each newLogFile In newLogFiles(newLogFiles.ToArray.Length - 1)
-                Writer.WriteLine(newLogFile)
-            Next
-        End Using
+        'newLogFiles.ToArray().Length - 1) is get the latest log file
+        WriteLogFile(Path.Combine(output1Path, newFileNames), newLogFiles(newLogFiles.ToArray().Length - 1))
+        WriteLogFile(Path.Combine(output2Path, newFileNames), newLogFiles(newLogFiles.ToArray().Length - 1))
 
-        Using Writer As New StreamWriter(Path.Combine(output2Path, newFileNames), False)
-            For Each newLogFile In newLogFiles(newLogFiles.ToArray.Length - 1)
-                Writer.WriteLine(newLogFile)
-            Next
-        End Using
-
+        'Write test data for product traceability system tracking
         Using Writer As New StreamWriter(Path.Combine(testDataPath, $"{orderController.canisSerialNumber.SerialNumber}.txt"), False)
             Writer.WriteLine($"{orderController.canisSerialNumber.SerialNumber},{orderController.canisSerialNumber.Model},,,,,,{currentDateTime:d/M/yyyy hh:mm:ss tt},,,,,{inspectorCmb.Text},YMB,{checkerName},{status},")
         End Using
@@ -259,4 +263,13 @@ Public Class InstructionForm
 
         File.Delete(ictLogPath)
     End Sub
+
+    Private Sub WriteLogFile(logPath As String, logDatas As String())
+        Using Writer As New StreamWriter(logPath, False)
+            For Each logData In logDatas
+                Writer.WriteLine(logData)
+            Next
+        End Using
+    End Sub
+
 End Class
