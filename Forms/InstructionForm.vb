@@ -239,14 +239,6 @@ Public Class InstructionForm
 
         Dim newFileNames As String = $"{partOrder}_{orderController.canisSerialNumber.SerialNumber}_{currentYear}{currentMonth}{currentDay}{currentHour}{currentMinute}{currentSecond}_{status}.LOG"
 
-        If File.Exists(Path.Combine(output1Path, newFileNames)) Then
-            My.Computer.FileSystem.DeleteFile(Path.Combine(output1Path, newFileNames))
-        End If
-
-        If File.Exists(Path.Combine(output2Path, newFileNames)) Then
-            My.Computer.FileSystem.DeleteFile(Path.Combine(output2Path, newFileNames))
-        End If
-
         Using Writer As New StreamWriter(Path.Combine(output1Path, newFileNames), False)
             For Each newLogFile In newLogFiles(newLogFiles.ToArray.Length - 1)
                 Writer.WriteLine(newLogFile)
