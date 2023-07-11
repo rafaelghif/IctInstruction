@@ -129,17 +129,20 @@ Public Class InstructionForm
         Dim extensionSequenceFileName As String = ".csv"
 
         'The third-party program cannot write "*" and /," so we must convert it.
-        model = orderController.canisSerialNumber.Model.Replace("*A", "").Replace("/", "-")
-        partOrder = model
+        If orderController.canisSerialNumber.Model.Split("/").Length > 1 Then
+            model = orderController.canisSerialNumber.Model.Replace("*A", "").Replace("/", "-")
+            partOrder = model
+            model = model.Split("-")(0)
+        Else
+            model = orderController.canisSerialNumber.Model.Replace("*A", "").Replace("/", "-")
+            partOrder = model
+        End If
 
         'Check if the model functions as a PBA or not.
         pbaModel = GetIniValue("MODEL", partOrder, $"{currentDirectory}/ConfigFiles/modelPbaList.ini").Trim()
         If String.IsNullOrEmpty(pbaModel) Then
-            pbaModel = model
+            pbaModel = partOrder
         End If
-
-        'Sequences define only models, so we remove the suffix code.
-        model = model.Split("-")(0)
 
         sequenceFilePath = $"{sequencePath}/{prefixSequenceFileName}{model}{extensionSequenceFileName}"
         sequenceList = sequenceController.GetSequence(sequenceFilePath)
