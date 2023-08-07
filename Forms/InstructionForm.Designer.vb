@@ -52,7 +52,7 @@ Partial Class InstructionForm
         Me.canisSerialNumberTxt.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
         Me.canisSerialNumberTxt.Font = New System.Drawing.Font("Source Sans Pro", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.canisSerialNumberTxt.Location = New System.Drawing.Point(157, 27)
-        Me.canisSerialNumberTxt.MaxLength = 10
+        Me.canisSerialNumberTxt.MaxLength = 12
         Me.canisSerialNumberTxt.Name = "canisSerialNumberTxt"
         Me.canisSerialNumberTxt.Size = New System.Drawing.Size(218, 29)
         Me.canisSerialNumberTxt.TabIndex = 0
@@ -60,10 +60,10 @@ Partial Class InstructionForm
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Font = New System.Drawing.Font("Source Sans Pro", 13.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(12, 30)
+        Me.Label1.Font = New System.Drawing.Font("Source Sans Pro", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label1.Location = New System.Drawing.Point(5, 31)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(139, 23)
+        Me.Label1.Size = New System.Drawing.Size(125, 20)
         Me.Label1.TabIndex = 2
         Me.Label1.Text = "Canis Serial No"
         '

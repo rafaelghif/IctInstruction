@@ -33,7 +33,7 @@ Public Class InstructionForm
 
     Private Sub CanisSerialNumberTxt_KeyDown(sender As Object, e As KeyEventArgs) Handles canisSerialNumberTxt.KeyDown
         If e.KeyCode = Keys.Enter Then
-
+            canisSerialNumberTxt.Text = canisSerialNumberTxt.Text.Replace("@", "")
             'Delete the ICT log to ensure the log output is not duplicated and is good.
             If File.Exists(ictLogPath) Then
                 File.Delete(ictLogPath)
@@ -130,7 +130,12 @@ Public Class InstructionForm
 
         'The third-party program cannot write "*" and /," so we must convert it.
         If orderController.canisSerialNumber.Model.Split("/").Length > 1 Then
-            model = orderController.canisSerialNumber.Model.Replace("*A", "").Replace("/", "-")
+            If orderController.canisSerialNumber.Model.Split("/")(1) = "ZCT" Then
+                model = orderController.canisSerialNumber.Model.Replace("*A", "").Replace("/", "-")
+            Else
+                model = orderController.canisSerialNumber.Model.Replace("*A", "").Split("/")(0)
+            End If
+
             partOrder = model
             model = model.Split("-")(0)
         Else
